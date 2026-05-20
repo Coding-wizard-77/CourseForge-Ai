@@ -11,23 +11,20 @@ import { CourseOrchestrator } from "./services/courseOrchestrator.js";
 import { createApiRouter } from "./routes/api.js";
 import { createVectorStore } from "./vectorDB/vectorStore.js";
 
+const renderFrontendOrigin = "https://courseforge-ai-frontend.onrender.com";
+
 export async function createApp() {
   const repository = await createRepository();
   const vectorStore = await createVectorStore();
   const orchestrator = new CourseOrchestrator(repository, vectorStore);
+  const allowedCorsOrigins = Array.from(new Set(["http://localhost:3000", renderFrontendOrigin, normalizeOrigin(env.CLIENT_ORIGIN)]));
 
   const app = express();
   app.set("trust proxy", 1);
   app.use(helmet());
   app.use(
     cors({
-      origin: (origin, callback) => {
-        if (!origin || origin === env.CLIENT_ORIGIN || /^http:\/\/(localhost|127\.0\.0\.1):\d+$/.test(origin)) {
-          callback(null, true);
-          return;
-        }
-        callback(new Error(`CORS blocked origin: ${origin}`));
-      },
+      origin: allowedCorsOrigins,
       credentials: true
     })
   );
@@ -48,4 +45,8 @@ export async function createApp() {
   });
 
   return app;
+}
+
+function normalizeOrigin(origin: string) {
+  return origin.replace(/\/+$/, "");
 }
