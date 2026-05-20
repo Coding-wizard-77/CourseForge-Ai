@@ -57,7 +57,10 @@ if (parsed.data.NODE_ENV === "production" && parsed.data.JWT_ACCESS_SECRET === D
   throw new Error("Invalid environment configuration: JWT_ACCESS_SECRET must be set in production.");
 }
 
-export const env = parsed.data;
+export const env = {
+  ...parsed.data,
+  CLIENT_ORIGIN: resolveClientOrigin(parsed.data.CLIENT_ORIGIN)
+};
 
 export const featureFlags = {
   gemini: Boolean(env.GEMINI_API_KEY),
@@ -159,4 +162,16 @@ export function getSafeEnvSummary() {
     PINECONE_INDEX: env.PINECONE_INDEX ?? "<empty>",
     PINECONE_NAMESPACE: env.PINECONE_NAMESPACE
   };
+}
+
+function resolveClientOrigin(origin: string) {
+  if (isHostedRuntime && isLocalOrigin(origin)) {
+    return RENDER_CLIENT_ORIGIN;
+  }
+  return origin;
+}
+
+function isLocalOrigin(origin: string) {
+  const hostname = new URL(origin).hostname;
+  return hostname === "localhost" || hostname === "127.0.0.1" || hostname === "::1";
 }
