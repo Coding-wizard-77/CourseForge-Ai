@@ -1,0 +1,18 @@
+{
+  "name": "courseforge-ai",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Full-stack AI-powered personalized mini-course generator.",
+  "scripts": {
+    "dev": "concurrently \"npm run dev --workspace server\" \"npm run dev --workspace client\"",
+    "build": "npm run build --workspace server && npm run build --workspace client",
+    "lint": "npm run lint --workspace server && npm run lint --workspace client"
+  },
+  "workspaces": [
+    "client",
+    "server"
+  ],
+  "devDependencies": {
+    "concurrently": "^9.2.1"
+  }
+}
