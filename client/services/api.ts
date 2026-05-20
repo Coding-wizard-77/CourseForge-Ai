@@ -2,7 +2,8 @@ import axios from "axios";
 import type { InternalAxiosRequestConfig } from "axios";
 import type { AuthUser, Course, QuizQuestion, UserProgress } from "@/services/types";
 
-export const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8080";
+const configuredApiUrl = process.env.NEXT_PUBLIC_API_URL ?? process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8080";
+export const apiBaseUrl = configuredApiUrl.replace(/\/+$/, "");
 type RetriableRequestConfig = InternalAxiosRequestConfig & { _retry?: boolean };
 
 const api = axios.create({

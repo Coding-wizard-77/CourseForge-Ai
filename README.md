@@ -75,6 +75,17 @@ npm run start --workspace server
 
 The backend TypeScript config writes compiled JavaScript to `server/dist`, and `server/package.json` starts the compiled entrypoint with `node dist/index.js`.
 
+Set these Render environment variables for deployed auth and API calls:
+
+```bash
+# Frontend service
+NEXT_PUBLIC_API_URL=https://courseforge-ai-yrh6.onrender.com
+
+# Backend service
+CLIENT_ORIGIN=https://courseforge-ai-frontend.onrender.com
+GOOGLE_OAUTH_REDIRECT_URI=https://courseforge-ai-yrh6.onrender.com/api/auth/google/callback
+```
+
 ## API Highlights
 
 - `POST /api/course/create`
