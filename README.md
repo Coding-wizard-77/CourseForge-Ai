@@ -61,6 +61,20 @@ npm run prisma:studio --workspace server -- --browser none --port 5555
 
 Diagnostics are also available at `GET /api/diagnostics`.
 
+## Render Backend Deploy
+
+Use these commands for the backend service on Render:
+
+```bash
+# Build Command
+npm install && npm run prisma:generate --workspace server && npm run build --workspace server
+
+# Start Command
+npm run start --workspace server
+```
+
+The backend TypeScript config writes compiled JavaScript to `server/dist`, and `server/package.json` starts the compiled entrypoint with `node dist/index.js`.
+
 ## API Highlights
 
 - `POST /api/course/create`
