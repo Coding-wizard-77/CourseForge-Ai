@@ -5,7 +5,7 @@ import bcrypt from "bcryptjs";
 import jwt, { type JwtPayload } from "jsonwebtoken";
 import { z } from "zod";
 import type { AppRepository } from "../db/repository.js";
-import { env } from "../services/env.js";
+import { env, HOSTED_RUNTIME } from "../services/env.js";
 import type { AuthSessionRecord, AuthUserRecord, PublicAuthUser } from "../types/auth.js";
 import { AppError } from "../utils/errors.js";
 
@@ -326,8 +326,8 @@ function getSessionMeta(request: Request): SessionMeta {
 function baseCookieOptions(): CookieOptions {
   return {
     httpOnly: true,
-    secure: env.NODE_ENV === "production",
-    sameSite: "lax",
+    secure: HOSTED_RUNTIME,
+    sameSite: HOSTED_RUNTIME ? "none" : "lax",
     path: "/",
     domain: env.COOKIE_DOMAIN
   };

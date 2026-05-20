@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
-import { ArrowRight, BookOpen, Brain, Layers3, PlayCircle, Sparkles } from "lucide-react";
+import { ArrowRight, BookOpen, Brain, Layers3, Loader2, PlayCircle, Sparkles } from "lucide-react";
 import { AuthScreen } from "@/components/auth/auth-screen";
 import { AuthGate } from "@/components/auth/auth-gate";
 import { useAuth } from "@/components/auth/auth-provider";
@@ -23,17 +23,44 @@ import { useCourseGeneration } from "@/hooks/useCourseGeneration";
 type AuthMode = "login" | "signup";
 
 export default function HomePage() {
+  const { status } = useAuth();
   const [authMode, setAuthMode] = useState<AuthMode | null>(null);
+  const [isCompletingOAuth, setIsCompletingOAuth] = useState(false);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     if (params.has("auth_error")) {
       setAuthMode("login");
     }
+    if (params.get("auth") === "google") {
+      setIsCompletingOAuth(true);
+    }
   }, []);
 
+  useEffect(() => {
+    if (!isCompletingOAuth || status === "loading") {
+      return;
+    }
+
+    if (status === "authenticated") {
+      window.history.replaceState(null, "", window.location.pathname || "/");
+      setIsCompletingOAuth(false);
+      return;
+    }
+
+    const url = new URL(window.location.href);
+    url.searchParams.delete("auth");
+    url.searchParams.set("auth_error", "google_session");
+    window.history.replaceState(null, "", `${url.pathname}${url.search}${url.hash}`);
+    setAuthMode("login");
+    setIsCompletingOAuth(false);
+  }, [isCompletingOAuth, status]);
+
+  const authCompletionExperience = <OAuthReturnScreen />;
   const publicExperience = authMode ? (
     <AuthScreen initialMode={authMode} onBack={() => setAuthMode(null)} />
+  ) : isCompletingOAuth ? (
+    authCompletionExperience
   ) : (
     <LandingPage onAuth={(intent) => setAuthMode(intent)} />
   );
@@ -45,6 +72,17 @@ export default function HomePage() {
     >
       <DashboardPage />
     </AuthGate>
+  );
+}
+
+function OAuthReturnScreen() {
+  return (
+    <main className="theme-light grid min-h-screen place-items-center bg-background px-4">
+      <div className="flex items-center gap-3 rounded-lg border border-line bg-panel px-5 py-4 text-sm font-medium text-ink shadow-soft">
+        <Loader2 className="h-4 w-4 animate-spin text-teal" />
+        Signing you in
+      </div>
+    </main>
   );
 }
 

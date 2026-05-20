@@ -13,6 +13,7 @@ export const RENDER_CLIENT_ORIGIN = "https://courseforge-ai-frontend.onrender.co
 const emptyToUndefined = (value: unknown) => (value === "" ? undefined : value);
 const DEFAULT_JWT_ACCESS_SECRET = "courseforge-dev-access-secret-change-before-production";
 const isHostedRuntime = process.env.NODE_ENV === "production" || process.env.RENDER === "true" || Boolean(process.env.RENDER_EXTERNAL_URL);
+export const HOSTED_RUNTIME = isHostedRuntime;
 const defaultClientOrigin = isHostedRuntime ? RENDER_CLIENT_ORIGIN : LOCAL_CLIENT_ORIGIN;
 
 const EnvSchema = z.object({
