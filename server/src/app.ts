@@ -4,20 +4,18 @@ import express from "express";
 import helmet from "helmet";
 import morgan from "morgan";
 import { createRepository } from "./db/index.js";
-import { env } from "./services/env.js";
+import { env, LOCAL_CLIENT_ORIGIN, RENDER_CLIENT_ORIGIN } from "./services/env.js";
 import { explainError } from "./utils/errors.js";
 import { logger } from "./utils/logger.js";
 import { CourseOrchestrator } from "./services/courseOrchestrator.js";
 import { createApiRouter } from "./routes/api.js";
 import { createVectorStore } from "./vectorDB/vectorStore.js";
 
-const renderFrontendOrigin = "https://courseforge-ai-frontend.onrender.com";
-
 export async function createApp() {
   const repository = await createRepository();
   const vectorStore = await createVectorStore();
   const orchestrator = new CourseOrchestrator(repository, vectorStore);
-  const allowedCorsOrigins = Array.from(new Set(["http://localhost:3000", renderFrontendOrigin, normalizeOrigin(env.CLIENT_ORIGIN)]));
+  const allowedCorsOrigins = Array.from(new Set([LOCAL_CLIENT_ORIGIN, RENDER_CLIENT_ORIGIN, normalizeOrigin(env.CLIENT_ORIGIN)]));
 
   const app = express();
   app.set("trust proxy", 1);

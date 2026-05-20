@@ -7,13 +7,18 @@ import { maskSecret } from "../utils/logger.js";
 const envPath = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../../.env");
 dotenv.config({ path: envPath });
 
+export const LOCAL_CLIENT_ORIGIN = "http://localhost:3000";
+export const RENDER_CLIENT_ORIGIN = "https://courseforge-ai-frontend.onrender.com";
+
 const emptyToUndefined = (value: unknown) => (value === "" ? undefined : value);
 const DEFAULT_JWT_ACCESS_SECRET = "courseforge-dev-access-secret-change-before-production";
+const isHostedRuntime = process.env.NODE_ENV === "production" || process.env.RENDER === "true" || Boolean(process.env.RENDER_EXTERNAL_URL);
+const defaultClientOrigin = isHostedRuntime ? RENDER_CLIENT_ORIGIN : LOCAL_CLIENT_ORIGIN;
 
 const EnvSchema = z.object({
   NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
   PORT: z.coerce.number().int().positive().default(8080),
-  CLIENT_ORIGIN: z.string().url().default("http://localhost:3000"),
+  CLIENT_ORIGIN: z.string().url().default(defaultClientOrigin),
   GEMINI_API_KEY: z.preprocess(emptyToUndefined, z.string().min(20).optional()),
   GEMINI_MODEL: z.string().min(1).default("gemini-2.5-flash"),
   GEMINI_ADVANCED_MODEL: z.string().min(1).default("gemini-2.5-pro"),
