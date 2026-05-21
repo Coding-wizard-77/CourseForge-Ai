@@ -18,8 +18,8 @@ cp server/.env.example server/.env
 npm run dev
 ```
 
-Frontend: http://localhost:3000  
-Backend: http://localhost:8080
+Frontend: https://courseforge-ai-frontend.onrender.com
+Backend: https://courseforge-ai-yrh6.onrender.com
 
 ## Optional Services
 
